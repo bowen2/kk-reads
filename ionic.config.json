@@ -1,0 +1,8 @@
+{
+  "name": "kk-reads",
+  "app_id": "1b330849",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  }
+}

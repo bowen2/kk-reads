@@ -1,0 +1,91 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Ionic file browsing</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+  <ion-content ng-controller="ExampleController">
+
+    <h3>Browse and open files here!</h3>
+
+    <p>
+      List of files supposed to appear here.
+    </p>
+
+    <div class="list">
+
+        <div ng-repeat="file in files">
+
+            <a class="item item-icon-left" href="#" ng-click="getContents(file.nativeURL)">
+                <i ng-show="file.isDirectory" class="icon ion-folder"></i>
+                <i ng-show="file.isFile" class="icon ion-document"></i>
+                {{file.name}}
+            </a>
+
+        </div>
+
+    </div>
+</ion-content>
+
+
+<script>
+.factory("$fileFactory", function($q) {
+
+    var File = function() { };
+
+    File.prototype = {
+
+        getParentDirectory: function(path) {
+            var deferred = $q.defer();
+            window.resolveLocalFileSystemURI(path, function(fileSystem) {
+                fileSystem.getParent(function(result) {
+                    deferred.resolve(result);
+                }, function(error) {
+                    deferred.reject(error);
+                });
+            }, function(error) {
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        },
+
+        getEntriesAtRoot: function() {
+            var deferred = $q.defer();
+            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+                var directoryReader = fileSystem.root.createReader();
+                directoryReader.readEntries(function(entries) {
+                    deferred.resolve(entries);
+                }, function(error) {
+                    deferred.reject(error);
+                });
+            }, function(error) {
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        },
+
+        getEntries: function(path) {
+            var deferred = $q.defer();
+            window.resolveLocalFileSystemURI(path, function(fileSystem) {
+                var directoryReader = fileSystem.createReader();
+                directoryReader.readEntries(function(entries) {
+                    deferred.resolve(entries);
+                }, function(error) {
+                    deferred.reject(error);
+                });
+            }, function(error) {
+                deferred.reject(error);
+            });
+            return deferred.promise;
+        }
+
+    };
+
+    return File;
+
+});
+</script>
